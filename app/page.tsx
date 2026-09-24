@@ -1,9 +1,9 @@
 import React from 'react';
-
+import Banner from "@/components/banner"
 const page = () => {
   return (
     <div>
-      My First Project Using Next.js
+      <Banner />
     </div>
   );
 };
