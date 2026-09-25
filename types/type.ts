@@ -11,5 +11,5 @@ export type Workout = {
     "reps": string;
     "rating": number;
     "description": string;
-    "instructions": string;
+    "instructions": string[] | string;
 };

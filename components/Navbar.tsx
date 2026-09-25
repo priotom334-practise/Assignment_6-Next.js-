@@ -3,12 +3,41 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import logo from "@/public/logo.png"
+
+const readPlanCount = (key: string) => {
+    try {
+        const plan = JSON.parse(window.localStorage.getItem(key) ?? '[]');
+        return Array.isArray(plan) ? plan.length : 0;
+    } catch {
+        return 0;
+    }
+};
 
 const Navbar = () => {
     const pathname = usePathname();
     const isWorkoutsActive = pathname === '/';
     const isMyPlanActive = pathname === '/MyPlan';
+    const [planCounts, setPlanCounts] = useState({ today: 0, saved: 0 });
+
+    useEffect(() => {
+        const syncPlanCounts = () => {
+            setPlanCounts({
+                today: readPlanCount('fitlog_today_plan'),
+                saved: readPlanCount('fitlog_saved_plan'),
+            });
+        };
+
+        syncPlanCounts();
+        window.addEventListener('storage', syncPlanCounts);
+        window.addEventListener('fitlog:plan-updated', syncPlanCounts);
+
+        return () => {
+            window.removeEventListener('storage', syncPlanCounts);
+            window.removeEventListener('fitlog:plan-updated', syncPlanCounts);
+        };
+    }, [pathname]);
 
     return (
         <div className="navbar bg-base-100 shadow-sm">
@@ -35,8 +64,12 @@ const Navbar = () => {
                     </ul>
                 </div>
                 <div className="navbar-end gap-4">
-                    <Link href="/MyPlan" className="btn rounded-full">Plan</Link>
-                    <Link href="/MyPlan" className="btn rounded-full">Saved</Link>
+                    <Link href="/MyPlan" className="btn rounded-full">
+                        Plan <span className="badge badge-sm bg-lime-400 text-black">{planCounts.today}</span>
+                    </Link>
+                    <Link href="/MyPlan" className="btn rounded-full">
+                        Saved <span className="badge badge-sm">{planCounts.saved}</span>
+                    </Link>
                 </div>
             </div>
         </div>
