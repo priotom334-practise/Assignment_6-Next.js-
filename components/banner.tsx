@@ -3,7 +3,7 @@ import BannerLogo from "../public/banner.png";
 
 const Banner = () => {
   return (
-    <div className="container mx-auto flex flex-col gap-6 rounded-2xl bg-gray-800 px-4 py-5 sm:px-6 sm:py-6 md:flex-row md:items-center md:justify-between md:px-8 md:py-8">
+    <div className="container mx-auto my-8 flex flex-col gap-6 rounded-2xl bg-gray-800 px-4 py-5 sm:px-6 sm:py-6 md:flex-row md:items-center md:justify-between md:px-8 md:py-8">
       <div className="flex flex-col justify-center gap-6 px-4 py-6 md:px-4 md:py-8">
         <p className="font-bold text-amber-300">WORKOUT LIBRARY</p>
 
