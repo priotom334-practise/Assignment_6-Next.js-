@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import type { Workout } from '../types/type';
 
 const Items = async () => {
@@ -18,7 +19,7 @@ const library = async () => {
 
             <div className="container mx-auto mt-6 grid gap-5 px-4 sm:grid-cols-2 sm:px-6 lg:grid-cols-3">
                 {items.map((item: Workout) => (
-                    <div key={item.id} className="overflow-hidden rounded-2xl border border-gray-700 bg-gray-900 shadow-lg">
+                    <Link key={item.id} href={`/workouts/${item.id}`} className="block overflow-hidden rounded-2xl border border-gray-700 bg-gray-900 shadow-lg">
                         <div className="relative h-48 w-full overflow-hidden rounded-t-lg">
                             {item.image 
                                ? (<Image src={item.image} alt={item.name} fill unoptimized className="object-cover" />) 
@@ -45,7 +46,7 @@ const library = async () => {
                                 <span className="text-yellow-300">★ {item.rating}</span>
                             </div>
                         </div>
-                    </div>
+                    </Link>
                 ))}
             </div>
         </div>
