@@ -51,7 +51,7 @@ const Navbar = () => {
                             tabIndex={-1}
                             className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
                             <li><Link className={isWorkoutsActive ? 'bg-gray-700 rounded-full text-lime-600 font-bold' : ''} href="/">Workouts</Link></li>
-                            <li><Link className={isMyPlanActive ? 'bg-gray-700 rounded-full text-lime-600 font-bold' : ''} href="/MyPlan">My Plan</Link></li>
+                            <li><Link className={isMyPlanActive ? 'bg-gray-700 rounded-full text-lime-600 font-bold' : ''} href="/MyPlan?tab=today">My Plan</Link></li>
                         </ul>
                     </div>
                     <Image src={logo} alt="logo" className="h-4 w-4 object-contain lg:h-4 lg:w-6" />
@@ -60,14 +60,14 @@ const Navbar = () => {
                 <div className="navbar-center hidden lg:flex">
                     <ul className="menu menu-horizontal gap-4 px-1">
                         <li><Link className={isWorkoutsActive ? 'bg-gray-700 rounded-full text-lime-600 font-bold' : ''} href="/">Workouts</Link></li>
-                        <li><Link className={isMyPlanActive ? 'bg-gray-700 rounded-full text-lime-600 font-bold' : ''} href="/MyPlan">My Plan</Link></li>
+                        <li><Link className={isMyPlanActive ? 'bg-gray-700 rounded-full text-lime-600 font-bold' : ''} href="/MyPlan?tab=today">My Plan</Link></li>
                     </ul>
                 </div>
                 <div className="navbar-end gap-4">
-                    <Link href="/MyPlan" className="btn rounded-full">
+                    <Link href="/MyPlan?tab=today" className="btn rounded-full">
                         Plan <span className="badge badge-sm bg-lime-400 text-black">{planCounts.today}</span>
                     </Link>
-                    <Link href="/MyPlan" className="btn rounded-full">
+                    <Link href="/MyPlan?tab=saved" className="btn rounded-full">
                         Saved <span className="badge badge-sm">{planCounts.saved}</span>
                     </Link>
                 </div>

@@ -1,10 +1,9 @@
-
-
 'use client';
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 
 type PlanItem = {
     id: number;
@@ -45,16 +44,18 @@ const persistPlan = (key: string, items: PlanItem[]) => {
     }
 };
 
-const MyPlanPage = () => {
-    const [tab, setTab] = useState<TabKey>('today');
+const MyPlanContent = () => {
     const [sortBy, setSortBy] = useState<SortKey>('duration');
     const [todayPlan, setTodayPlan] = useState<PlanItem[]>(() => readPlan(STORAGE_KEYS.today));
     const [savedPlan, setSavedPlan] = useState<PlanItem[]>(() => readPlan(STORAGE_KEYS.saved));
+    const searchParams = useSearchParams();
+    const tab: TabKey = searchParams.get('tab') === 'saved' ? 'saved' : 'today';
 
     const activeItems = tab === 'today' ? todayPlan : savedPlan;
-    const sortedItems = [...activeItems].sort((left, right) =>
-        sortBy === 'rating' ? right.rating - left.rating : left[sortBy] - right[sortBy]
-    );
+    const sortedItems = [...activeItems].sort((first, second) => {
+        if (sortBy === 'rating') return second.rating - first.rating;
+        return first[sortBy] - second[sortBy];
+    });
     const totalMinutes = activeItems.reduce((sum, item) => sum + item.duration, 0);
     const totalCalories = activeItems.reduce((sum, item) => sum + item.calories, 0);
 
@@ -106,44 +107,88 @@ const MyPlanPage = () => {
             <section className="rounded-2xl border border-gray-800 bg-[#0b1117] p-4 sm:p-5">
                 <div className="mb-5 flex flex-col gap-3 border-b border-gray-800 pb-4 sm:flex-row sm:items-center sm:justify-between">
                     <div className="flex items-center gap-2 rounded-full border border-gray-700 bg-[#111a22] p-1">
-                        <button
-                            type="button"
-                            onClick={() => setTab('today')}
+                        <Link
+                            href="/MyPlan?tab=today"
                             className={`rounded-full px-4 py-2 text-xs font-bold uppercase tracking-wide ${
                                 tab === 'today' ? 'bg-[#d9ff3f] text-black' : 'text-gray-300'
                             }`}
                         >
                             Today&apos;s Plan
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => setTab('saved')}
+                        </Link>
+                        <Link
+                            href="/MyPlan?tab=saved"
                             className={`rounded-full px-4 py-2 text-xs font-bold uppercase tracking-wide ${
                                 tab === 'saved' ? 'bg-[#d9ff3f] text-black' : 'text-gray-300'
                             }`}
                         >
                             Saved
-                        </button>
+                        </Link>
                     </div>
 
-                    <div className="flex items-center gap-2 text-xs text-gray-300">
-                        <span className="text-gray-400">Sort by</span>
-                        <select
-                            aria-label="Sort workouts by"
-                            value={sortBy}
-                            onChange={(event) => setSortBy(event.target.value as SortKey)}
-                            className="rounded-full border border-gray-700 bg-[#111a22] px-3 py-2 font-semibold text-gray-200"
+                    <div className="flex flex-col gap-2 text-xs sm:flex-row sm:items-center sm:gap-3">
+                        <span className="font-bold uppercase tracking-[0.14em] text-gray-500">Sort by</span>
+                        <div
+                            role="group"
+                            aria-label="Sort exercises"
+                            className="inline-flex w-fit max-w-full items-center gap-1 rounded-xl border border-gray-800 bg-[#080d12] p-1"
                         >
-                            <option value="duration">Time</option>
-                            <option value="calories">Calories</option>
-                            <option value="rating">Rating</option>
-                        </select>
+                            <button
+                                type="button"
+                                aria-label="Sort by shortest duration"
+                                aria-pressed={sortBy === 'duration'}
+                                onClick={() => setSortBy('duration')}
+                                className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-2 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-400 sm:px-3 ${
+                                    sortBy === 'duration'
+                                        ? 'bg-[#d9ff3f] text-black shadow-sm'
+                                        : 'text-gray-400 hover:bg-gray-800 hover:text-white'
+                                }`}
+                            >
+                                <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-4 w-4 shrink-0">
+                                    <circle cx="12" cy="12" r="8" />
+                                    <path d="M12 7v5l3 2" strokeLinecap="round" strokeLinejoin="round" />
+                                </svg>
+                                Duration
+                            </button>
+                            <button
+                                type="button"
+                                aria-label="Sort by lowest calories"
+                                aria-pressed={sortBy === 'calories'}
+                                onClick={() => setSortBy('calories')}
+                                className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-2 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-400 sm:px-3 ${
+                                    sortBy === 'calories'
+                                        ? 'bg-[#d9ff3f] text-black shadow-sm'
+                                        : 'text-gray-400 hover:bg-gray-800 hover:text-white'
+                                }`}
+                            >
+                                <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-4 w-4 shrink-0">
+                                    <path d="M12 22c4 0 7-3 7-7 0-2.7-1.5-4.8-4-6.5.2 2-1 3-2 3.5.2-3.3-1.3-6.2-4.5-9C9 7 5 10.5 5 15c0 4 3 7 7 7Z" strokeLinecap="round" strokeLinejoin="round" />
+                                </svg>
+                                Calories
+                            </button>
+                            <button
+                                type="button"
+                                aria-label="Sort by highest rating"
+                                aria-pressed={sortBy === 'rating'}
+                                onClick={() => setSortBy('rating')}
+                                className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-2 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-400 sm:px-3 ${
+                                    sortBy === 'rating'
+                                        ? 'bg-[#d9ff3f] text-black shadow-sm'
+                                        : 'text-gray-400 hover:bg-gray-800 hover:text-white'
+                                }`}
+                            >
+                                <svg aria-hidden="true" viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4 shrink-0">
+                                    <path d="m10 2 2.47 5 5.53.8-4 3.9.94 5.5L10 14.6l-4.94 2.6.94-5.5-4-3.9L7.53 7 10 2Z" />
+                                </svg>
+                                Rating
+                            </button>
+                        </div>
                     </div>
                 </div>
 
                 {activeItems.length === 0 ? (
-                    <div className="rounded-2xl border border-dashed border-gray-700 bg-[#0d141b] p-6 text-center text-sm text-gray-400">
-                        No workouts in this list yet.
+                    <div className="rounded-2xl border border-dashed border-gray-700 bg-[#0d141b] p-6 text-center text-sm text-gray-400 flex flex-col items-center gap-4">
+                        Browse the library and add a lift to get today moving.
+                        <Link href="/" className='btn rounded-full bg-lime-500'> Go to workouts</Link>
                     </div>
                 ) : (
                     <div className="space-y-4">
@@ -170,15 +215,14 @@ const MyPlanPage = () => {
                                                 {item.duration} min
                                             </span>
                                             <span className="inline-flex items-center gap-1">
-                                                <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-3.5 w-3.5 text-orange-400">
-                                                    <path d="M12 22a7 7 0 0 0 7-7c0-3.5-2.5-5.5-4-8-1 2-2 3-3 3-1-3-3-5-3-5s.5 4-2 7a7 7 0 0 0 5 10Z" strokeLinecap="round" strokeLinejoin="round" />
-                                                    <path d="M12 22a3 3 0 0 0 3-3c0-1.5-1-2.5-2-3.5-.5 1-1.5 1.5-2.5 2A3 3 0 0 0 12 22Z" strokeLinecap="round" strokeLinejoin="round" />
+                                                <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-3.5 w-3.5">
+                                                    <path d="M12 22c4 0 7-3 7-7 0-2.7-1.5-4.8-4-6.5.2 2-1 3-2 3.5.2-3.3-1.3-6.2-4.5-9C9 7 5 10.5 5 15c0 4 3 7 7 7Z" strokeLinecap="round" strokeLinejoin="round" />
                                                 </svg>
                                                 {item.calories} kcal
                                             </span>
                                             <span className="inline-flex items-center gap-1 text-[#d9ff3f]">
-                                                <svg aria-hidden="true" viewBox="0 0 24 24" fill="currentColor" className="h-3.5 w-3.5">
-                                                    <path d="m12 2.75 2.86 5.8 6.4.93-4.63 4.51 1.09 6.37L12 17.35l-5.72 3.01 1.09-6.37-4.63-4.51 6.4-.93L12 2.75Z" />
+                                                <svg aria-hidden="true" viewBox="0 0 20 20" fill="currentColor" className="h-3.5 w-3.5">
+                                                    <path d="m10 2 2.47 5 5.53.8-4 3.9.94 5.5L10 14.6l-4.94 2.6.94-5.5-4-3.9L7.53 7 10 2Z" />
                                                 </svg>
                                                 {item.rating.toFixed(1)}
                                             </span>
@@ -213,5 +257,11 @@ const MyPlanPage = () => {
         </main>
     );
 };
+
+const MyPlanPage = () => (
+    <Suspense fallback={<main className="px-4 py-10 text-center text-gray-400">Loading plan...</main>}>
+        <MyPlanContent />
+    </Suspense>
+);
 
 export default MyPlanPage;
