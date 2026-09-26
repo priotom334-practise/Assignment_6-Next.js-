@@ -49,3 +49,8 @@ Save exercises to a separate Saved list for future workouts. Saved exercises rem
 
 Sort workouts by duration, calories, or rating, and mark completed exercises as Done. The navigation bar automatically updates the number of workouts in both the daily plan and saved list.
 
+
+
+# 🎯 Project Goal
+
+The main goal of FITLOG is to create a simple, modern, and user-friendly workout platform where users can easily discover exercises, explore detailed workout information, organize their daily routines, and save workouts for future use.
