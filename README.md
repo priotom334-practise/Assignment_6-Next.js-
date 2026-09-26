@@ -21,24 +21,26 @@ REST API -	Fetching workout data
 LocalStorage -	Storing workout plans in the browser
 
 
+
 ## ✨ Key Features
-## 🏋️ 1. Browse Workouts
+
+# 🏋️ 1. Browse Workouts
 
 Explore a collection of exercises through a clean and responsive workout grid. Each workout card provides essential information such as the exercise name, equipment, duration, calories burned, rating, and image.
 
-## 🔍 2. View Detailed Workout Information
+# 🔍 2. View Detailed Workout Information
 
 Open any workout to access a dedicated details page with complete exercise information, including difficulty, sets, reps, duration, calories, target muscle groups, description, and step-by-step instructions.
 
-## 📋 3. Build a Personal Workout Plan
+# 📋 3. Build a Personal Workout Plan
 
 Add exercises to Today's Plan and manage them from a dedicated planning page. FITLOG automatically calculates the total number of exercises, workout duration, and estimated calories.
 
-## 🔖 4. Save Workouts for Later
+# 🔖 4. Save Workouts for Later
 
 Save exercises to a separate Saved list for future workouts. Saved exercises remain available through browser storage, even after refreshing or navigating through the application.
 
-## ↕️ 5. Organize and Track Workouts
+# ↕️ 5. Organize and Track Workouts
 
 Sort workouts by duration, calories, or rating, and mark completed exercises as Done. The navigation bar automatically updates the number of workouts in both the daily plan and saved list.
 
