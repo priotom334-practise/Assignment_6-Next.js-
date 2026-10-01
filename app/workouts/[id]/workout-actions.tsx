@@ -38,7 +38,12 @@ export default function WorkoutActions({ workout }: { workout: Workout }) {
             calories: workout.caloriesBurned,
             rating: workout.rating,
         };
-        const next = current.some((entry) => entry.id === item.id) ? current : [...current, item];
+        if (current.some((entry) => entry.id === item.id)) {
+            window.alert(`${item.name} is already in your ${target === 'today' ? 'daily plan' : 'saved workouts'}.`);
+            return;
+        }
+
+        const next = [...current, item];
 
         window.localStorage.setItem(storageKey, JSON.stringify(next));
         window.dispatchEvent(new Event('fitlog:plan-updated'));
@@ -48,7 +53,7 @@ export default function WorkoutActions({ workout }: { workout: Workout }) {
     return (
         <div className="flex flex-wrap gap-3">
             <button type="button" onClick={() => addWorkout('today')} className="btn btn-warning">
-                Add to today&apos;s plan
+                Add to today's plan
             </button>
             <button type="button" onClick={() => addWorkout('saved')} className="btn btn-soft">
                 Save for later

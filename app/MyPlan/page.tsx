@@ -16,7 +16,7 @@ type PlanItem = {
 };
 
 type TabKey = 'today' | 'saved';
-type SortKey = 'duration' | 'calories' | 'rating';
+type SortKey = 'recent' | 'duration' | 'calories' | 'rating';
 
 const STORAGE_KEYS = {
     today: 'fitlog_today_plan',
@@ -45,17 +45,16 @@ const persistPlan = (key: string, items: PlanItem[]) => {
 };
 
 const MyPlanContent = () => {
-    const [sortBy, setSortBy] = useState<SortKey>('duration');
+    const [sortBy, setSortBy] = useState<SortKey>('recent');
     const [todayPlan, setTodayPlan] = useState<PlanItem[]>(() => readPlan(STORAGE_KEYS.today));
     const [savedPlan, setSavedPlan] = useState<PlanItem[]>(() => readPlan(STORAGE_KEYS.saved));
     const searchParams = useSearchParams();
     const tab: TabKey = searchParams.get('tab') === 'saved' ? 'saved' : 'today';
 
     const activeItems = tab === 'today' ? todayPlan : savedPlan;
-    const sortedItems = [...activeItems].sort((first, second) => {
-        if (sortBy === 'rating') return second.rating - first.rating;
-        return first[sortBy] - second[sortBy];
-    });
+    const sortedItems = sortBy === 'recent'
+        ? [...activeItems].reverse()
+        : [...activeItems].sort((first, second) => second[sortBy] - first[sortBy]);
     const totalMinutes = activeItems.reduce((sum, item) => sum + item.duration, 0);
     const totalCalories = activeItems.reduce((sum, item) => sum + item.calories, 0);
 
@@ -113,7 +112,7 @@ const MyPlanContent = () => {
                                 tab === 'today' ? 'bg-[#d9ff3f] text-black' : 'text-gray-300'
                             }`}
                         >
-                            Today&apos;s Plan
+                            Today's Plan
                         </Link>
                         <Link
                             href="/MyPlan?tab=saved"
@@ -134,7 +133,7 @@ const MyPlanContent = () => {
                         >
                             <button
                                 type="button"
-                                aria-label="Sort by shortest duration"
+                                aria-label="Sort by highest duration"
                                 aria-pressed={sortBy === 'duration'}
                                 onClick={() => setSortBy('duration')}
                                 className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-2 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-400 sm:px-3 ${
@@ -151,7 +150,7 @@ const MyPlanContent = () => {
                             </button>
                             <button
                                 type="button"
-                                aria-label="Sort by lowest calories"
+                                aria-label="Sort by highest calories"
                                 aria-pressed={sortBy === 'calories'}
                                 onClick={() => setSortBy('calories')}
                                 className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-2 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime-400 sm:px-3 ${
@@ -238,15 +237,28 @@ const MyPlanContent = () => {
                                         View Details
                                     </Link>
 
+                                    {tab === 'today' && (
+                                        <button
+                                            type="button"
+                                            onClick={() => handleDone(item.id)}
+                                            className="inline-flex items-center gap-2 rounded-full bg-[#d9ff3f] px-4 py-2 text-xs font-black uppercase tracking-wide text-black transition hover:bg-[#c9f128]"
+                                        >
+                                            <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-4 w-4">
+                                                <path d="M5 12.5h14M12 5.5v14" strokeLinecap="round" />
+                                            </svg>
+                                            Mark as Done
+                                        </button>
+                                    )}
                                     <button
                                         type="button"
+                                        aria-label={`Remove ${item.name} from plan`}
+                                        title={`Remove ${item.name} from plan`}
                                         onClick={() => handleDone(item.id)}
-                                        className="inline-flex items-center gap-2 rounded-full bg-[#d9ff3f] px-4 py-2 text-xs font-black uppercase tracking-wide text-black transition hover:bg-[#c9f128]"
+                                        className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-gray-700 text-gray-400 transition-colors hover:border-red-500 hover:text-red-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
                                     >
-                                        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-4 w-4">
-                                            <path d="M5 12.5h14M12 5.5v14" strokeLinecap="round" />
+                                        <svg aria-hidden="true" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" className="h-4 w-4">
+                                            <path d="m5 5 10 10M15 5 5 15" strokeLinecap="round" />
                                         </svg>
-                                        Mark as Done
                                     </button>
                                 </div>
                             </div>
